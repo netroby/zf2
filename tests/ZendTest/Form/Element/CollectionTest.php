@@ -356,7 +356,9 @@ class CollectionTest extends TestCase
         $this->productFieldset->setUseAsBaseFieldset(true);
         $form->add($this->productFieldset);
 
-        $originalObjectHash = spl_object_hash($this->productFieldset->get("categories")->getTargetElement()->getObject());
+        $originalObjectHash = spl_object_hash(
+            $this->productFieldset->get("categories")->getTargetElement()->getObject()
+        );
 
         $product = new Product();
         $product->setName("foo");
@@ -383,7 +385,9 @@ class CollectionTest extends TestCase
             )
         );
 
-        $objectAfterExtractHash = spl_object_hash($this->productFieldset->get("categories")->getTargetElement()->getObject());
+        $objectAfterExtractHash = spl_object_hash(
+            $this->productFieldset->get("categories")->getTargetElement()->getObject()
+        );
 
         $this->assertSame($originalObjectHash, $objectAfterExtractHash);
     }
@@ -391,7 +395,7 @@ class CollectionTest extends TestCase
     public function testDoesNotCreateNewObjects()
     {
         if (!extension_loaded('intl')) {
-            // Required by \Zend\I18n\Validator\Float
+            // Required by \Zend\I18n\Validator\IsFloat
             $this->markTestSkipped('ext/intl not enabled');
         }
 
@@ -434,7 +438,7 @@ class CollectionTest extends TestCase
     public function testCreatesNewObjectsIfSpecified()
     {
         if (!extension_loaded('intl')) {
-            // Required by \Zend\I18n\Validator\Float
+            // Required by \Zend\I18n\Validator\IsFloat
             $this->markTestSkipped('ext/intl not enabled');
         }
 
@@ -574,7 +578,10 @@ class CollectionTest extends TestCase
         $form->setHydrator(new \Zend\Stdlib\Hydrator\ObjectProperty());
 
         $product = new Product();
-        $categories = array(new \ZendTest\Form\TestAsset\Entity\Category(), new \ZendTest\Form\TestAsset\Entity\Category());
+        $categories = array(
+            new \ZendTest\Form\TestAsset\Entity\Category(),
+            new \ZendTest\Form\TestAsset\Entity\Category(),
+        );
         $product->setCategories($categories);
 
         $market = new \StdClass();
@@ -784,8 +791,14 @@ class CollectionTest extends TestCase
             $this->assertInstanceOf('ZendTest\Form\TestAsset\Entity\Product', $_productFieldset->getObject());
 
             // test for collection -> fieldset -> fieldset
-            $this->assertInstanceOf('ZendTest\Form\TestAsset\CountryFieldset', $_productFieldset->get('made_in_country'));
-            $this->assertInstanceOf('ZendTest\Form\TestAsset\Entity\Country', $_productFieldset->get('made_in_country')->getObject());
+            $this->assertInstanceOf(
+                'ZendTest\Form\TestAsset\CountryFieldset',
+                $_productFieldset->get('made_in_country')
+            );
+            $this->assertInstanceOf(
+                'ZendTest\Form\TestAsset\Entity\Country',
+                $_productFieldset->get('made_in_country')->getObject()
+            );
 
             // test for collection -> fieldset -> collection
             $_productCategories = $_productFieldset->get('categories');
@@ -997,10 +1010,10 @@ class CollectionTest extends TestCase
             foreach ($_fieldset->getFieldsets() as $_nestedfieldset) {
                 // Each shop is represented by a single fieldset
                 $this->assertCount(1, $_nestedfieldset->getFieldsets());
-                foreach ( $_nestedfieldset->getFieldsets() as $_productfieldset) {
+                foreach ($_nestedfieldset->getFieldsets() as $_productfieldset) {
                     // Each shop fieldset contain a collection with two products in it
                     $this->assertCount(2, $_productfieldset->getFieldsets());
-                    foreach ( $_productfieldset->getFieldsets() as $_product) {
+                    foreach ($_productfieldset->getFieldsets() as $_product) {
                         $this->assertInstanceOf('ZendTest\Form\TestAsset\Entity\Product', $_product->getObject());
                     }
                 }
@@ -1059,7 +1072,10 @@ class CollectionTest extends TestCase
                         break;
                     case 'phones':
                         foreach ($_childFieldset->getFieldsets() as $_phoneFieldset) {
-                            $this->assertInstanceOf('ZendTest\Form\TestAsset\Entity\Phone', $_phoneFieldset->getObject());
+                            $this->assertInstanceOf(
+                                'ZendTest\Form\TestAsset\Entity\Phone',
+                                $_phoneFieldset->getObject()
+                            );
                         }
                         break;
                 }
@@ -1140,7 +1156,7 @@ class CollectionTest extends TestCase
         $collection->setObject($arrayCollection);
         $this->assertEquals(3, $collection->getCount());
     }
-    
+
     /**
      * @group zf6263
      * @group zf6518
@@ -1159,7 +1175,7 @@ class CollectionTest extends TestCase
         $object = new \ArrayObject(array('text' => array('Foo', 'Bar')));
         $form->bind($object);
         $this->assertTrue($form->isValid());
-        
+
         $result = $form->getData();
         $this->assertInstanceOf('ArrayAccess', $result);
         $this->assertArrayHasKey('text', $result);
@@ -1169,7 +1185,7 @@ class CollectionTest extends TestCase
         $this->assertArrayHasKey(1, $result['text']);
         $this->assertEquals('Bar', $result['text'][1]);
     }
-    
+
     /**
      * Unit test to ensure behavior of extract() method is unaffected by refactor
      *
@@ -1194,13 +1210,13 @@ class CollectionTest extends TestCase
                 'count' => 2
             ),
         ));
-        
+
         $model = new \stdClass();
         $model->collection = array(new \ArrayObject(array('test' => 'bar')), new \stdClass());
-        
+
         $form->bind($model);
         $this->assertTrue($form->isValid());
-        
+
         $result = $form->getData();
         $this->assertInstanceOf('stdClass', $result);
         $this->assertObjectHasAttribute('collection', $result);
